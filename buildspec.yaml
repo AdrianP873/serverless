@@ -2,7 +2,7 @@ version: 0.2
 phases:
   install:
     commands:
-      - sam package --template-file template.yaml --s3-bucket adriaplu-prod-bucket --output-template-file packaged-template.yaml
+      - sam package --template-file template.yaml --s3-bucket serverless-demo-bucket --output-template-file packaged-template.yaml
 artifacts:
   files:
     - packaged-template.yaml
