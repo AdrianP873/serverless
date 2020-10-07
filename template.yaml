@@ -9,14 +9,18 @@ Resources:
       Name: ServerlessApi
       EndpointConfiguration: EDGE
       StageName: prod
-            OpenApiVersion: 3.0.1
+      Cors:
+        AllowMethods: "'GET', 'OPTIONS'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+      OpenApiVersion: 3.0.1
       DefinitionBody:
         openapi: "3.0.1"
         info:
           title: "serverless demo api"
           version: "1.0"
         paths:
-          /h2/helper:
+          /hello:
             options:
               summary: cors support
               description: enable cors by returning correct headers
@@ -52,7 +56,7 @@ Resources:
                       application/json: |
                         {}
             get:
-              operationId: helper read
+              operationId: get lambda
               x-amazon-apigateway-integration:
                 httpMethod: post
                 type: aws_proxy
@@ -76,8 +80,7 @@ Resources:
                     Access-Control-Allow-Headers:
                       schema:
                         type: string
-
-
+                        
   MyLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
