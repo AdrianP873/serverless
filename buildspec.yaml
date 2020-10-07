@@ -1,9 +1,6 @@
 version: 0.2
 phases:
-  build:
-    runtime-versions:
-        python: 3.7
-  build:
+  install:
     commands:
       - sam package --template-file template.yaml --s3-bucket adriaplu-prod-bucket --output-template-file packaged-template.yaml
 artifacts:
