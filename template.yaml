@@ -9,45 +9,6 @@ Resources:
       Name: ServerlessApi
       EndpointConfiguration: EDGE
       StageName: prod
-      Cors:
-        AllowMethods: "'GET', 'OPTIONS'"
-        AllowHeaders: "'*'"
-        AllowOrigin: "'*'"
-      OpenApiVersion: 3.0.1
-      DefinitionBody:
-        openapi: "3.0.1"
-        info:
-          title: "serverless demo api"
-          version: "1.0"
-        paths:
-          /hello:
-            get:
-              operationId: getlambda
-              x-amazon-apigateway-integration:
-                httpMethod: post
-                type: aws_proxy
-                passthroughBehavior: WHEN_NO_MATCH
-                uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MyLambdaFunction.Arn}/invocations
-                payloadFormatVersion: "1.0"
-              requestBody:
-                content:
-                  application/json:
-                    schema:
-                      type: string
-                      format: binary
-              responses:
-                '200':
-                  headers:
-                    Access-Control-Allow-Origin:
-                      schema:
-                        type: string
-                    Access-Control-Allow-Methods:
-                      schema:
-                        type: string
-                    Access-Control-Allow-Headers:
-                      schema:
-                        type: string
 
   MyLambdaFunction:
     Type: AWS::Serverless::Function
