@@ -87,10 +87,13 @@ Resources:
                 Provider: CloudFormation
                 Version: 1
               Configuration:
+                ActionMode: CHANGE_SET_REPLACE
+                StackName: serverless-demo
+                Capabilities: CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND
+                ChangeSetName: serverless-demo-sam-change-set
                 RoleArn: !GetAtt CfnServiceRole.Arn
-
-
-
+                TemplatePath: PackagedSource::infra/packaged-template.yaml
+              RunOrder: 1
       Tags:
         - Key: ProjectName
           Value: serverless-demo
