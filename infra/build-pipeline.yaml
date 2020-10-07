@@ -4,21 +4,21 @@ Parameters:
     Default: main
   GitHubSrcRepo:
     Type: String
+    Description: "Name of the repository to use as source"
     Default: AdrianP873/serverless
   CodeStarConnection:
     Type: String
     Default: GithubConnection
   ArtifactStoreBucket:
     Type: String
+    Description: "S3 bucket to store artifacts"
     Default: adriaplu-prod-bucket
   GitHubHttps:
     Type: String
     Description: The HTTPS clone URL to the repository that contains the source and the build spec.
     Default: https://github.com/AdrianP873/serverless.git
 
-
 Resources:
-
   GitHubConnection:
     Type: AWS::CodeStarConnections::Connection
     Properties:
