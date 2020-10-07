@@ -9,6 +9,73 @@ Resources:
       Name: ServerlessApi
       EndpointConfiguration: EDGE
       StageName: prod
+            OpenApiVersion: 3.0.1
+      DefinitionBody:
+        openapi: "3.0.1"
+        info:
+          title: "serverless demo api"
+          version: "1.0"
+        paths:
+          /h2/helper:
+            options:
+              summary: cors support
+              description: enable cors by returning correct headers
+              responses:
+                '200':
+                  description: default response for cors method
+                  headers:
+                    Access-Control-Allow-Origin:
+                      schema:
+                        type: string
+                    Access-Control-Allow-Methods:
+                      schema:
+                        type: string
+                    Access-Control-Allow-Headers:
+                      schema:
+                        type: string
+                  content: {}
+              x-amazon-apigateway-integration:
+                type: mock
+                requestTemplates:
+                  application/json: |
+                    {
+                      "statusCode" : 200
+                    }
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
+                      method.response.header.Access-Control-Allow-Methods: '''*'''
+                      method.response.header.Access-Control-Allow-Origin: '''*'''
+                    responseTemplates:
+                      application/json: |
+                        {}
+            get:
+              operationId: helper read
+              x-amazon-apigateway-integration:
+                httpMethod: post
+                type: aws_proxy
+                uri:
+                  Fn::Sub: arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${serverlessFunction.Arn}/invocations
+                payloadFormatVersion: "1.0"
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: "#/components/schemas/body"
+              responses:
+                '200':
+                  headers:
+                    Access-Control-Allow-Origin:
+                      schema:
+                        type: string
+                    Access-Control-Allow-Methods:
+                      schema:
+                        type: string
+                    Access-Control-Allow-Headers:
+                      schema:
+                        type: string
 
 
   MyLambdaFunction:
@@ -27,6 +94,6 @@ Resources:
             RestApiId: !Ref MyRestfulApi
       AutoPublishAlias: live
       DeploymentPreference:
-        Type: Canary10Percent10Minutes
+        Type: Canary10Percent5Minutes
 
 
