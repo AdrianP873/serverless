@@ -61,7 +61,7 @@ Resources:
                 httpMethod: post
                 type: aws_proxy
                 uri:
-                  Fn::Sub: arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${serverlessFunction.Arn}/invocations
+                  Fn::Sub: arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MyLambdaFunction.Arn}/invocations
                 payloadFormatVersion: "1.0"
               requestBody:
                 content:
