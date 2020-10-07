@@ -20,54 +20,22 @@ Resources:
           title: "serverless demo api"
           version: "1.0"
         paths:
-          /:
-            options:
-              summary: cors support
-              description: enable cors by returning correct headers
-              responses:
-                '200':
-                  description: default response for cors method
-                  headers:
-                    Access-Control-Allow-Origin:
-                      schema:
-                        type: string
-                    Access-Control-Allow-Methods:
-                      schema:
-                        type: string
-                    Access-Control-Allow-Headers:
-                      schema:
-                        type: string
-                  content: {}
-              x-amazon-apigateway-integration:
-                type: mock
-                requestTemplates:
-                  application/json: |
-                    {
-                      "statusCode" : 200
-                    }
-                responses:
-                  default:
-                    statusCode: 200
-                    responseParameters:
-                      method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
-                      method.response.header.Access-Control-Allow-Methods: '''*'''
-                      method.response.header.Access-Control-Allow-Origin: '''*'''
-                    responseTemplates:
-                      application/json: |
-                        {}
+          /hello:
             get:
-              operationId: get lambda
+              operationId: getlambda
               x-amazon-apigateway-integration:
                 httpMethod: post
                 type: aws_proxy
+                passthroughBehavior: WHEN_NO_MATCH
                 uri:
-                  Fn::Sub: arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MyLambdaFunction.Arn}/invocations
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MyLambdaFunction.Arn}/invocations
                 payloadFormatVersion: "1.0"
               requestBody:
                 content:
                   application/json:
                     schema:
-                      $ref: "#/components/schemas/body"
+                      type: string
+                      format: binary
               responses:
                 '200':
                   headers:
