@@ -12,7 +12,7 @@ Parameters:
   ArtifactStoreBucket:
     Type: String
     Description: "S3 bucket to store artifacts"
-    Default: adriaplu-prod-bucket
+    Default: serverless-demo-bucket
   GitHubHttps:
     Type: String
     Description: The HTTPS clone URL to the repository that contains the source and the build spec.
