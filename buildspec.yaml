@@ -5,10 +5,10 @@ phases:
         python: 3.7
   build:
     commands:
-      - sam package --template-file template.yml --s3-bucket bucketname --output-template-file packaged-template.yml
+      - sam package --template-file template.yaml --s3-bucket adriaplu-prod-bucket --output-template-file packaged-template.yaml
 artifacts:
   files:
-    - packaged-template.yml
+    - packaged-template.yaml
   name: PackagedSource
 
 
