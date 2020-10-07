@@ -92,7 +92,7 @@ Resources:
                 Capabilities: CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND
                 ChangeSetName: serverless-demo-sam-change-set
                 RoleArn: !GetAtt CfnServiceRole.Arn
-                TemplatePath: PackagedSource::infra/packaged-template.yaml
+                TemplatePath: PackagedSource::packaged-template.yaml
               RunOrder: 1
       Tags:
         - Key: ProjectName
