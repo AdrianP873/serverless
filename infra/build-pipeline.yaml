@@ -1,0 +1,223 @@
+Parameters:
+  BranchName:
+    Type: String
+    Default: main
+  GitHubSrcRepo:
+    Type: String
+    Default: AdrianP873/serverless
+  CodeStarConnection:
+    Type: String
+    Default: GithubConnection
+  ArtifactStoreBucket:
+    Type: String
+    Default: adriaplu-prod-bucket
+  GitHubHttps:
+    Type: String
+    Description: The HTTPS clone URL to the repository that contains the source and the build spec.
+    Default: https://github.com/AdrianP873/serverless.git
+
+
+Resources:
+
+  GitHubConnection:
+    Type: AWS::CodeStarConnections::Connection
+    Properties:
+      ConnectionName: !Ref CodeStarConnection
+      ProviderType: GitHub
+
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    DependsOn: GitHubConnection
+    Properties:
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactStoreBucket
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      Stages:
+        -
+          Name: Source
+          Actions:
+            -
+              Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Version: 1
+                Provider: CodeStarSourceConnection
+              OutputArtifacts:
+                -
+                  Name: SourceOutput
+
+              Configuration:
+                BranchName: !Ref BranchName
+                ConnectionArn: !Ref GitHubConnection
+                FullRepositoryId: !Ref GitHubSrcRepo
+              RunOrder: 1
+        -
+          Name: PackageSam
+          Actions:
+            -
+              Name: PackageSamAction
+              InputArtifacts:
+                -
+                  Name: SourceOutput
+              OutputArtifacts:
+                -
+                  Name: PackagedSource
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              Configuration:
+                ProjectName: !Ref PackageProject
+                PrimarySource: SourceOutput
+              RunOrder: 1
+        -
+          Name: DeploySamInfra
+          Actions:
+            -
+              Name: SamChangeSet
+              InputArtifacts:
+                -
+                  Name: PackagedSource
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              Configuration:
+                RoleArn: !GetAtt CfnServiceRole.Arn
+
+
+
+      Tags:
+        - Key: ProjectName
+          Value: serverless-demo
+
+  PackageProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: serverless-demo
+      Description: Pipeline that builds a serverless application
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+        ComputeType: BUILD_GENERAL1_SMALL
+        EnvironmentVariables:
+          - Name: INFRA_BUCKET
+            Value: !Ref ArtifactStoreBucket
+      Source:
+        Type: CODEPIPELINE
+
+  CodePipelineServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: serverless-codepipeline-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'codecommit:CancelUploadArchive'
+                  - 'codecommit:GetBranch'
+                  - 'codecommit:GetCommit'
+                  - 'codecommit:GetUploadArchiveStatus'
+                  - 'codecommit:UploadArchive'
+                  - 'codebuild:*'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'iam:PassRole'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'cloudwatch:*'
+                  - 's3:*'
+                  - 'sns:*'
+                  - 'cloudformation:*'
+                  - 'apigateway:*'
+                  - 'lambda:*'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'codestar-connections:*'
+                Resource: !Ref GitHubConnection
+
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: ['sts:AssumeRole']
+            Effect: Allow
+            Principal:
+              Service: [codebuild.amazonaws.com]
+        Version: '2012-10-17'
+      Path: /
+      Policies:
+        - PolicyName: CodeBuildAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              -
+                Action:
+                  - cloudformation:ListStackResources
+                  - ec2:CreateNetworkInterface
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:DeleteNetworkInterface
+                  - ec2:DescribeSubnets
+                  - ec2:DescribeSecurityGroups
+                  - ec2:DescribeDhcpOptions
+                  - ec2:DescribeVpcs
+                  - ec2:CreateNetworkInterfacePermission
+                  - lambda:InvokeFunction
+                  - logs:*
+                  - s3:*
+                Effect: Allow
+                Resource: '*'
+
+  CfnServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - cloudformation.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: cloudformation-codepipline-deploy-policy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'iam:*'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'apigateway:*'
+                  - 'cloudformation:*'
+                  - 'cloudwatch:*'
+                  - 'dynamodb:*'
+                  - 'events:*'
+                  - 'lambda:*'
+                  - 's3:*'
+                Resource: '*'
