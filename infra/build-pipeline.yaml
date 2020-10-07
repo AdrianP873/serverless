@@ -223,5 +223,8 @@ Resources:
                   - 'events:*'
                   - 'lambda:*'
                   - 's3:*'
-                  - 'codedeploy:CreateApplication'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'codedeploy:*'
                 Resource: '*'
