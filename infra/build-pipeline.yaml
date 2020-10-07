@@ -223,4 +223,5 @@ Resources:
                   - 'events:*'
                   - 'lambda:*'
                   - 's3:*'
+                  - 'codedeploy:CreateApplication'
                 Resource: '*'
