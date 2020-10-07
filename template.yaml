@@ -20,7 +20,7 @@ Resources:
           title: "serverless demo api"
           version: "1.0"
         paths:
-          /hello:
+          /:
             options:
               summary: cors support
               description: enable cors by returning correct headers
@@ -80,7 +80,7 @@ Resources:
                     Access-Control-Allow-Headers:
                       schema:
                         type: string
-                        
+
   MyLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
