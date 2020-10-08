@@ -16,7 +16,6 @@ Parameters:
   GitHubHttps:
     Type: String
     Description: The HTTPS clone URL to the repository that contains the source and the build spec.
-    Default: https://github.com/AdrianP873/serverless.git
 
 Resources:
   GitHubConnection:
