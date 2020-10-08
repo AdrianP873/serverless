@@ -5,7 +5,6 @@ Parameters:
   GitHubSrcRepo:
     Type: String
     Description: "Name of the repository to use as source"
-    Default: AdrianP873/serverless
   CodeStarConnection:
     Type: String
     Default: GithubConnection
