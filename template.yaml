@@ -15,7 +15,7 @@ Resources:
     Properties:
       Handler: hello.handler
       Runtime: python3.7
-      FunctionName: serverlessFunction
+      FunctionName: serverless-demo
       CodeUri: src/api/hello.py
       Events:
         ApiEvent:
