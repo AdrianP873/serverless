@@ -2,7 +2,7 @@
 CodePipeline does not currently support deploying Lambda functions with CodeDeploy. We can workaround this limitation by leveraging the Serverless Application Model to deploy code changes to your Lambda functions with a Canary deployment strategy.
  
 ## Infrastructure Deployment
-The infra directory contains a CloudFormation template (build-pipeline.yaml) which provisions a CICD pipeline that connects to this GitHub source repository. In the case of real world usage, this template should be separated from the application repo.
+The infra directory contains a CloudFormation template (build-pipeline.yaml) which provisions a CICD pipeline that connects to this GitHub source repository.
 
 The build stage packages up the serverless function and API Gateway, and outputs an artifact to an S3 bucket.
 
